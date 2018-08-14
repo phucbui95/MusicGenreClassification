@@ -59,8 +59,4 @@ if __name__ == '__main__':
     if i % 100 == 0:
       print("Processed %0.2f" % (100 * i / len(df_train)))
 
-
-
-  m = np.load("output.npy")
-  print(m.shape)
-  print(m)
+  print("Done")

@@ -242,7 +242,7 @@ def threadsafe_generator(f):
 class DataGenerator(object):
     'Generates data for Keras'
 
-    def __init__(self, list_IDs, labels, batch_size=32, dim=(32, 32, 32), n_channels=1,
+    def __init__(self, list_IDs, labels, batch_size=32, dim=(348000, 1), n_channels=1,
                  n_classes=10, shuffle=True):
         'Initialization'
         self.dim = dim
@@ -322,8 +322,7 @@ def train_model(df_train, df_valid, args):
     model.summary()
     history_tl = model.fit_generator(
         training_generator.get_data(),
-        samples_per_epoch=10, nb_epoch=20,
-        verbose=2)
+        samples_per_epoch=10, nb_epoch=20)
 
     # model.save(args.output_model_file)
     #if args.plot:
