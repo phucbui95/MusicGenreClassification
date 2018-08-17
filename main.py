@@ -58,5 +58,4 @@ if __name__ == '__main__':
     load_audio(os.path.join(MUSIC_PATH, filename), output_path)
     if i % 100 == 0:
       print("Processed %0.2f" % (100 * i / len(df_train)))
-
   print("Done")

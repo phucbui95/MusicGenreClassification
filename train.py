@@ -110,7 +110,7 @@ def get_convBNeluMPdrop(num_conv_layers, nums_feat_maps,
                                     border_mode='same',
                                     init='he_normal'))
         # add BN, Activation, pooling
-        model.add(BatchNormalization(axis=1, mode=2))
+        model.add(BatchNormalization(axis=1))
         model.add(keras.layers.advanced_activations.ELU(alpha=1.0))  # TODO: select activation
 
         model.add(MaxPooling2D(pool_size=pool_sizes[conv_idx]))
@@ -133,6 +133,7 @@ def load_model(mode, conv_until=None):
 
     if conv_until is None:
         conv_until = 4
+    K.set_image_dim_ordering("th")
 
     assert K.image_dim_ordering() == 'th', ('image_dim_ordering should be "th". ' +
                                             'open ~/.keras/keras.json to change it.')
@@ -145,7 +146,7 @@ def load_model(mode, conv_until=None):
 
     model = build_convnet_model(args=args, last_layer=last_layer)
     model.load_weights('compact_cnn/weights_layer{}_{}.hdf5'.format(conv_until, K._backend),
-                       by_name=True)
+                       by_name=True, reshape=True)
     # and use it!
     return model
 
@@ -286,13 +287,14 @@ class DataGenerator(object):
         # Generate data
         for i, ID in enumerate(list_IDs_temp):
             # Store sample
-            X[i, 0,] = load_audio(os.path.join("../music_genre/train/", ID), None)
-
+            # X[i, 0,] = load_audio(os.path.join("../music_genre/train/", ID), None)
+            file_id = ID.split('.')[0]
+            X[i, 0, ] = np.load(os.path.join("data", "train", "{}.npy".format(file_id)))[:348000]
             # Store class
             y_ = keras.utils.np_utils.to_categorical(self.labels[self.labels.file == ID].genre_code.values - 1,
-                                                     nb_classes=10)
+                                                     num_classes=10)
             y[i] = y_
-        print(X.shape)
+        # print(X.shape)
         return X, y
 
     @threadsafe_generator
@@ -311,7 +313,7 @@ def train_model(df_train, df_valid, args):
 
     # Parameters
     params = {'dim': (348000, 1),
-              'batch_size': 10,
+              'batch_size': 64,
               'n_classes': 10,
               'n_channels': 1,
               'shuffle': True}
@@ -322,7 +324,7 @@ def train_model(df_train, df_valid, args):
     model.summary()
     history_tl = model.fit_generator(
         training_generator.get_data(),
-        samples_per_epoch=10, nb_epoch=20)
+        steps_per_epoch=50, nb_epoch=20)
 
     # model.save(args.output_model_file)
     #if args.plot:
