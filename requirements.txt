@@ -108,7 +108,7 @@ pyOpenSSL==18.0.0
 pyparsing==2.0.1
 python-dateutil==2.7.3
 pytz==2013.7
-PyYAML==3.13
+PyYAML==5.4
 pyzmq==17.1.2
 qtconsole==4.3.1
 requests==2.19.1
